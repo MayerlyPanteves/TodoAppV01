@@ -1,6 +1,4 @@
-# TodoAppV01 - Documentación
-
-Repositorio: [https://github.com/MayerlyPanteves/TodoAppV01.git](https://github.com/MayerlyPanteves/TodoAppV01.git)
+# Documentación
 
 ---
 
