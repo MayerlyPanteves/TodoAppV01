@@ -10,16 +10,16 @@ TodoAppV01 es una aplicación Android para la gestión de tareas, desarrollada e
 
 ---
 
-## Requerimientos del Sistema
+## Requerimientos del sistema
 
-### Requerimientos Funcionales
+### Requerimientos funcionales
 - Crear, editar y eliminar tareas.
 - Marcar tareas como completadas.
 - Organizar tareas por categorías.
 - Establecer fechas de vencimiento para tareas.
 - Recordatorios para tareas próximas.
 
-### Requerimientos No Funcionales
+### Requerimientos no funcionales
 - Interfaz intuitiva y responsive.
 - Almacenamiento local de datos con Room.
 - Compatibilidad con Android 8.0+.
@@ -27,7 +27,7 @@ TodoAppV01 es una aplicación Android para la gestión de tareas, desarrollada e
 
 ---
 
-## Android Studio y SDK
+## Android studio y SDK
 
 El proyecto fue desarrollado utilizando Android Studio y el SDK de Android con las siguientes configuraciones:
 - **Android Studio:** Versión 2022.3.1 o superior.
@@ -37,45 +37,45 @@ El proyecto fue desarrollado utilizando Android Studio y el SDK de Android con l
 
 ---
 
-## Diagramas del Sistema
+## Diagramas del sistema
 
-### Diagrama de Clases
+### Diagrama de clases
 
 <img width="512" height="512" alt="image" src="https://github.com/user-attachments/assets/c3506ed0-69b5-43e9-bfdf-91786ab1330e" />
 
-### Diagrama de Paquetes
+### Diagrama de paquetes
 
 <img width="512" height="512" alt="image" src="https://github.com/user-attachments/assets/f010478a-a922-4fda-bac2-27f21e624f78" />
 
-### Diagrama de Componentes
+### Diagrama de componentes
 
 <img width="512" height="512" alt="image" src="https://github.com/user-attachments/assets/76097b96-22a4-4f96-95cd-15bee88a89fa" />
 
 ---
 
-## Arquitectura y Capas
+## Arquitectura y capas
 
 La aplicación sigue la arquitectura **MVVM (Model-View-ViewModel)** con las siguientes capas:
 
-### Capa de Presentación
+### Capa de presentación
 - Activities y Fragments
 - ViewModels
 - Componentes de UI (XML)
 - Adaptadores para RecyclerView
 
-### Capa de Dominio
+### Capa de dominio
 - Repositorios
 - Casos de uso
 - Modelos de datos
 
-### Capa de Datos
+### Capa de datos
 - DAO (Data Access Objects)
 - Base de datos (Room)
 - Entidades
 
 ---
 
-## Metodología de Desarrollo
+## Metodología de desarrollo
 
 El proyecto sigue una adaptación de metodologías ágiles con énfasis en:
 - Desarrollo iterativo e incremental.
@@ -86,7 +86,7 @@ El proyecto sigue una adaptación de metodologías ágiles con énfasis en:
 
 ---
 
-## Mapa de Navegación
+## Mapa de navegación
 
 El flujo de navegación de la aplicación es el siguiente:
 
@@ -99,73 +99,101 @@ La navegación se implementa utilizando el componente **Navigation** de Android 
 
 ---
 
-## Implementación y Código
+## Implementación y código
 
-### Lenguajes y Tecnologías
+### Lenguajes y tecnologías
 - **Kotlin:** Lenguaje principal para la lógica de la aplicación.
 - **XML:** Para el diseño de interfaces de usuario.
 - **Room:** Persistencia de datos local.
 - **LiveData:** Observación de cambios en los datos.
 - **ViewModel:** Gestiona datos relacionados con la UI.
 
-### Control de Versiones
+### Control de versiones
 El proyecto utiliza **Git** para control de versiones con el siguiente flujo:
 - Rama `main` para releases estables.
 - Rama `develop` para integración de features.
 - Ramas feature para desarrollo de nuevas funcionalidades.
 - Commits descriptivos y convencionales.
 
-### Librerías y Frameworks
-#### Librerías de Presentación
+### Librerías y frameworks
+#### Librerías de presentación
 - AndroidX AppCompat
 - Material Design Components
 - ConstraintLayout
 - RecyclerView
 
-#### Frameworks y Arquitectura
+#### Frameworks y arquitectura
 - Android Architecture Components
 - Room Persistence Library
 - LiveData y ViewModel
 - Navigation Component
 
-### Buenas Prácticas y Patrones
+### Buenas prácticas y patrones
 - Principios **SOLID** aplicados en la estructura del proyecto.
 - Patrón **Repository** para el acceso a datos.
 - Inyección de dependencias manual (próximamente Hilt/Dagger).
 - Nomenclatura clara y consistente en paquetes y clases.
 - Código comentado para facilitar el mantenimiento.
 
-### Ejemplo de Código 
-```kotlin
-// TaskDao.kt - Data Access Object para las tareas
-@Dao
-interface TaskDao {
-    @Query("SELECT * FROM task ORDER BY dueDate ASC")
-    fun getAllTasks(): LiveData<List<Task>>
-    
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(task: Task)
-    
-    @Update
-    suspend fun update(task: Task)
-    
-    @Delete
-    suspend fun delete(task: Task)
-    
-    @Query("SELECT * FROM task WHERE id = :taskId")
-    fun getTaskById(taskId: Long): LiveData<Task>
-}
-
-### Pruebas Unitarias
+### Pruebas unitarias
 Se implementaron pruebas unitarias para los componentes críticos:
 
 Pruebas para ViewModels verificando la lógica de negocio.
-
 Pruebas para Repositorios mockeando las fuentes de datos.
-
 Pruebas para DAOs usando una base de datos en memoria.
-
 Pruebas para utilitarios y helpers.
 
+Kotlin
+// Ejemplo de prueba unitaria para el ViewModel
+@Test
+fun addNewTask_setsNewTaskEvent() {
+    // Given
+    val viewModel = TaskViewModel(repository)
+    
+    // When
+    viewModel.addNewTask()
+    
+    // Then
+    val event = viewModel.navigateToAddTask.getOrAwaitValue()
+    assertThat(event.getContentIfNotHandled(), not(nullValue()))
+}
 
+### Configuraciones y acceso a datos
+#### Configuración de base de Datos
 
+// AppDatabase.kt - Configuración de la base de datos Room
+@Database(entities = [Task::class], version = 1)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun taskDao(): TaskDao
+    
+    companion object {
+        @Volatile
+        private var INSTANCE: AppDatabase? = null
+        
+        fun getDatabase(context: Context): AppDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDatabase::class.java,
+                    "task_database"
+                ).build()
+                INSTANCE = instance
+                instance
+            }
+        }
+    }
+}
+
+## Configuración de dependencias
+Las dependencias del proyecto se gestionan a través de Gradle:
+
+Kotlin
+// build.gradle (Module)
+dependencies {
+    implementation "androidx.room:room-runtime:2.5.2"
+    kapt "androidx.room:room-compiler:2.5.2"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.6.0"
+    implementation "com.google.android.material:material:1.9.0"
+}
