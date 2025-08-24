@@ -188,14 +188,27 @@ abstract class AppDatabase : RoomDatabase() {
 Las dependencias del proyecto se gestionan a través de Gradle:
 
 Kotlin
-// build.gradle (Module)
-dependencies {
-    implementation "androidx.room:room-runtime:2.5.2"
-    kapt "androidx.room:room-compiler:2.5.2"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"
-    implementation "androidx.navigation:navigation-fragment-ktx:2.6.0"
-    implementation "com.google.android.material:material:1.9.0"
+// AppDatabase.kt - Configuración de la base de datos Room
+@Database(entities = [Task::class], version = 1)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun taskDao(): TaskDao
+    
+    companion object {
+        @Volatile
+        private var INSTANCE: AppDatabase? = null
+        
+        fun getDatabase(context: Context): AppDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDatabase::class.java,
+                    "task_database"
+                ).build()
+                INSTANCE = instance
+                instance
+            }
+        }
+    }
 }
 
 ## Contacto
