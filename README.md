@@ -35,6 +35,10 @@ El proyecto fue desarrollado utilizando Android Studio y el SDK de Android con l
 - **Gradle:** Versión 8.0.
 - **Kotlin:** Versión 1.8.20.
 
+
+<img width="512" height="512" alt="image" src="https://github.com/user-attachments/assets/c3506ed0-69b5-43e9-bfdf-91786ab1330e" />
+
+
 ---
 
 ## Diagramas del Sistema
