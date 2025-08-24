@@ -156,66 +156,16 @@ interface TaskDao {
     fun getTaskById(taskId: Long): LiveData<Task>
 }
 
-### Pruebas unitarias
+### Pruebas Unitarias
 Se implementaron pruebas unitarias para los componentes críticos:
 
 Pruebas para ViewModels verificando la lógica de negocio.
-Pruebas para repositorios mockeando las fuentes de datos.
+
+Pruebas para Repositorios mockeando las fuentes de datos.
+
 Pruebas para DAOs usando una base de datos en memoria.
+
 Pruebas para utilitarios y helpers.
 
-Kotlin
 
-// Ejemplo de prueba unitaria para el ViewModel
-@Test
-fun addNewTask_setsNewTaskEvent() {
-    // Given
-    val viewModel = TaskViewModel(repository)
-    
-    // When
-    viewModel.addNewTask()
-    
-    // Then
-    val event = viewModel.navigateToAddTask.getOrAwaitValue()
-    assertThat(event.getContentIfNotHandled(), not(nullValue()))
-}
-Configuraciones y acceso a datos
-Configuración de Base de Datos
-Kotlin
 
-// AppDatabase.kt - Configuración de la base de datos Room
-@Database(entities = [Task::class], version = 1)
-abstract class AppDatabase : RoomDatabase() {
-    abstract fun taskDao(): TaskDao
-    
-    companion object {
-        @Volatile
-        private var INSTANCE: AppDatabase? = null
-        
-        fun getDatabase(context: Context): AppDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    AppDatabase::class.java,
-                    "task_database"
-                ).build()
-                INSTANCE = instance
-                instance
-            }
-        }
-    }
-}
-Configuración de dependencias
-Las dependencias del proyecto se gestionan a través de Gradle:
-
-Gradle
-
-// build.gradle (Module)
-dependencies {
-    implementation "androidx.room:room-runtime:2.5.2"
-    kapt "androidx.room:room-compiler:2.5.2"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"
-    implementation "androidx.navigation:navigation-fragment-ktx:2.6.0"
-    implementation "com.google.android.material:material:1.9.0"
-}
